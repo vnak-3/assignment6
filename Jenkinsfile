@@ -40,4 +40,21 @@ pipeline {
         }
         stage('Trivy Scan') {
             steps {
-                echo 'Scanning Docker Image with
+                echo 'Scanning Docker Image with Trivy'
+                sh 'trivy image --exit-code 0 --severity HIGH,CRITICAL foodapi'
+                echo 'Trivy Scan Done'
+            }
+        }
+        stage('Deploy Container') {
+            steps {
+                echo 'Deploying Container'
+                sh '''
+                docker stop foodapi || true
+                docker rm foodapi || true
+                docker run -d --name foodapi -p 3000:3000 foodapi
+                '''
+                echo 'Container Deployed'
+            }
+        }
+    }
+}
