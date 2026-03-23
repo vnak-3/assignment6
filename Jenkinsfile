@@ -24,18 +24,13 @@ pipeline {
                 }
             }
         }
-
-
-
-        
-        sstage('Quality Gate') {
+        stage('Quality Gate') {
             steps {
                 timeout(time: 2, unit: 'MINUTES') {
                     waitForQualityGate abortPipeline: true
                 }
             }
         }
-        
         stage('Build Docker Image') {
             steps {
                 echo 'Building Docker Image'
@@ -45,21 +40,4 @@ pipeline {
         }
         stage('Trivy Scan') {
             steps {
-                echo 'Scanning Docker Image with Trivy'
-                sh 'trivy image --exit-code 0 --severity HIGH,CRITICAL foodapi'
-                echo 'Trivy Scan Done'
-            }
-        }
-        stage('Deploy Container') {
-            steps {
-                echo 'Deploying Container'
-                sh '''
-                docker stop foodapi || true
-                docker rm foodapi || true
-                docker run -d --name foodapi -p 3000:3000 foodapi
-                '''
-                echo 'Container Deployed'
-            }
-        }
-    }
-}
+                echo 'Scanning Docker Image with
